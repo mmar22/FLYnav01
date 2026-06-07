@@ -290,8 +290,8 @@ function startGPS(){
       watchId=navigator.geolocation.watchPosition(ok,fail2,{enableHighAccuracy:false,maximumAge:10000,timeout:60000});
       return;
     }
-    setGpsPill('GPS '+(msgs[e.code]||'ERR'),false);
-    showAlert('GPS: '+(msgs[e.code]||e.message),5000);
+    setGpsPill('GPS E'+e.code,false);
+    showAlert('GPS ERR '+e.code+': '+(msgs[e.code]||e.message),6000);
     useGPS=false;simOn=true;updateGpsBtn();
   }
   function fail2(e){
@@ -300,7 +300,7 @@ function startGPS(){
     showAlert('GPS LOW: '+(msgs[e.code]||e.message),5000);
     useGPS=false;simOn=true;updateGpsBtn();
   }
-  watchId=navigator.geolocation.watchPosition(ok,fail,{enableHighAccuracy:true,maximumAge:0,timeout:60000});
+  watchId=navigator.geolocation.watchPosition(ok,fail,{enableHighAccuracy:true,maximumAge:3000,timeout:60000});
 }
 function stopGPS(){if(watchId!==null){navigator.geolocation.clearWatch(watchId);watchId=null;}gpsPos=null;setGpsPill('SIMULÁCIA',false);simOn=true;}
 
@@ -328,7 +328,7 @@ function showAlert(m,d=3000){const e=document.getElementById('alert');e.textCont
 function startApp(){
   document.getElementById('splash').style.display='none';
   document.getElementById('app').classList.add('on');
-  resize();bindGyro();updateGpsBtn();
+  resize();startGyro();updateGpsBtn();
   setInterval(()=>{const n=new Date();document.getElementById('clock').textContent=n.toUTCString().slice(17,25)+'Z';},1000);
   requestAnimationFrame(draw);
 }
