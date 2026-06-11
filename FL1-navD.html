@@ -178,9 +178,7 @@ async function fetchMapData(lat,lng){
   const query=`[out:json][timeout:20];(
     node["aeroway"="aerodrome"](${bbox});
     node["aeroway"="helipad"](${bbox});
-    way["waterway"~"river|stream"](${bbox});
-    way["highway"~"motorway|trunk|primary|secondary"](${bbox});
-    node["place"~"city|town|village"](${bbox});
+    way["waterway"~"river"](${bbox});
     way["aeroway"="runway"](${bbox});
   );out body;>;out skel qt;`;
   
