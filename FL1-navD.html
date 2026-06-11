@@ -144,7 +144,7 @@ let route=DEMO.map(p=>({...p}));
 
 // ═══ DYNAMIC VFR MAP ═══
 // Fetches OSM data via Overpass API, refreshes every 7.5km
-const VMAP={airports:[],rivers:[],roads:[],towns:[],atz:[]};
+const VMAP={contours:[],airports:[],rivers:[],roads:[],towns:[],atz:[]};
 let mapFetchCenter=null; // {lat,lng} of last fetch
 let mapLoading=false;
 let mapStatus='';
