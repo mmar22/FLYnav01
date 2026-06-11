@@ -189,7 +189,7 @@ async function fetchMapData(lat,lng){
     parseOSM(data,lat,lng);
     mapStatus='';
   }catch(e){
-    mapStatus='MAPA ERR';
+    mapStatus='MAPA ERR (${bbox})';
     console.log('Map fetch error:',e);
   }
   mapLoading=false;
