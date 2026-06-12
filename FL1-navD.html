@@ -196,6 +196,28 @@ async function fetchMapData(lat,lng){
   mapLoading=false;
 }
 
+function getLatLon(el){
+  if(el.type === 'node'){
+    return [el.lat, el.lon];
+  }
+
+  if(el.type === 'way'){
+    if(el.lat && el.lon) return [el.lat, el.lon]; // rare
+    if(el.center) return [el.center.lat, el.center.lon];
+    if(el.geometry){
+      // centroid fallback
+      let lat=0, lon=0;
+      for(const p of el.geometry){
+        lat += p.lat;
+        lon += p.lon;
+      }
+      return [lat/el.geometry.length, lon/el.geometry.length];
+    }
+  }
+
+  return null;
+}
+  
 function parseOSM(data,lat,lng){
   // Build node index
   const nodes={};
@@ -213,14 +235,20 @@ function parseOSM(data,lat,lng){
       if(el.tags?.aeroway==='aerodrome'||el.tags?.aeroway==='helipad'){
         const icao=el.tags?.icao||el.tags?.ref||el.tags?.name||'?';
         const elev=parseFloat(el.tags?.ele||el.tags?.elevation||0);
-        VMAP.airports.push({
-          lat:el.lat,lng:el.lon,
-          elev:elev,
-          name:icao.toUpperCase(),
-          rwy:parseFloat(el.tags?.['runway:direction']||0)*10||0
-        });
-        // Approximate ATZ circle 5NM
-        VMAP.atz.push({name:icao+' ATZ',pts:mkCircleLL(el.lat,el.lon,0.083,0.083,20)});
+      const lat = el.lat ?? el.center?.lat;
+      const lng = el.lon ?? el.center?.lon;
+    VMAP.airports.push({
+      lat:lat,
+      lng:lng,
+      elev:elev,
+      name:icao.toUpperCase(),
+      rwy:parseFloat(el.tags?.['runway:direction']||0)*10||0
+    });
+
+    VMAP.atz.push({
+      name:icao+' ATZ',
+      pts:mkCircleLL(lat,lng,0.083,0.083,20)
+    });        // Approximate ATZ circle 5NM
       }
       // Towns
       if(el.tags?.place&&['city','town','village'].includes(el.tags.place)){
