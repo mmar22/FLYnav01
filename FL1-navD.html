@@ -268,6 +268,9 @@ function parseOSM(data,lat,lng){
         VMAP.roads.push({c:'rgba(200,165,60,0.55)',w:2,pts});
       else if(el.tags?.highway==='secondary')
         VMAP.roads.push({c:'rgba(180,145,50,0.4)',w:1.5,pts});
+      // Runways
+      if(['runway'].includes(el.tags?.aeroway))
+        VMAP.roads.push({c:'rgba(200,165,200,0.55)',w:3,pts});
     }
   }
 }
