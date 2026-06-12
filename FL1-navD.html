@@ -229,7 +229,7 @@ function parseOSM(data,lat,lng){
       }
     }
     if(el.type==='way'&&el.nodes){
-      const pts=el.nodes.map(id=>nodes[id]).filter(Boolean).map(n=>[n.lat,n.lng]);
+      const pts=el.nodes.map(id=>nodes[id]).filter(Boolean).map(n=>[n.lat,n.lon]);
       if(pts.length<2)continue;
       // Rivers
       if(el.tags?.waterway==='river')
