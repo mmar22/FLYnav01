@@ -208,7 +208,7 @@ function parseOSM(data,lat,lng){
   VMAP.atz.length=0;
 
   for(const el of data.elements){
-    if(el.type==='node'){
+    if(el.type==='node'||el.type==='way'){
       // Airports/heliports
       if(el.tags?.aeroway==='aerodrome'||el.tags?.aeroway==='helipad'){
         const icao=el.tags?.icao||el.tags?.ref||el.tags?.name||'?';
