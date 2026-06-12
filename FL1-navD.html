@@ -176,8 +176,7 @@ async function fetchMapData(lat,lng){
   const r=MAP_RADIUS/111320; // degrees approx
   const bbox=`${lat-r},${lng-r*1.5},${lat+r},${lng+r*1.5}`;
   const query=`[out:json][timeout:20];(
-    nwr["aeroway"="aerodrome"](${bbox});
-    node["aeroway"="helipad"](${bbox});
+    nwr["aeroway"="aerodrome"](${bbox}););out center;(
     way["highway"~"motorway|trunk|primary"](${bbox});
     way["waterway"="river"](${bbox});
     way["aeroway"="runway"](${bbox});
