@@ -195,26 +195,18 @@ async function fetchMapData(lat,lng){
   mapLoading=false;
 }
 
-function getLatLon(el){
-  if(el.type === 'node'){
-    return [el.lat, el.lon];
-  }
+function runwayHeading(pts)
+{
+    if(pts.length < 2) return 0;
 
-  if(el.type === 'way'){
-    if(el.lat && el.lon) return [el.lat, el.lon]; // rare
-    if(el.center) return [el.center.lat, el.center.lon];
-    if(el.geometry){
-      // centroid fallback
-      let lat=0, lon=0;
-      for(const p of el.geometry){
-        lat += p.lat;
-        lon += p.lon;
-      }
-      return [lat/el.geometry.length, lon/el.geometry.length];
-    }
-  }
+    const a = pts[0];
+    const b = pts[pts.length-1];
 
-  return null;
+    const dy = b[0]-a[0];
+    const dx = (b[1]-a[1]) *
+               Math.cos((a[0]+b[0])*0.5*Math.PI/180);
+
+    return (Math.atan2(dx,dy)*180/Math.PI + 360) % 360;
 }
   
 function parseOSM(data,lat,lng){
@@ -273,6 +265,32 @@ function parseOSM(data,lat,lng){
         VMAP.roads.push({c:'rgba(200,165,200,0.55)',w:3,pts});
     }
   }
+for(const apt of VMAP.airports)
+{
+    let bestDist = 1e9;
+    let bestHdg = 0;
+
+    for(const rw of VMAP.roads)
+    {
+        if(rw.w !== 3) continue;   // tvoje runway
+
+        const p = rw.pts[Math.floor(rw.pts.length/2)];
+
+        const d =
+            (p[0]-apt.lat)*(p[0]-apt.lat) +
+            (p[1]-apt.lng)*(p[1]-apt.lng);
+
+        if(d < bestDist)
+        {
+            bestDist = d;
+            bestHdg = runwayHeading(rw.pts);
+        }
+    }
+
+    // napr. len ak je runway do ~2 km
+    if(bestDist < 0.0004)
+        apt.rwy = bestHdg;
+ } 
 }
 
 function mkCircleLL(lat,lng,rLat,rLng,n){
