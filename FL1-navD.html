@@ -241,6 +241,26 @@ function runwayHeading(pts)
 
     return (Math.atan2(dx,dy)*180/Math.PI + 360) % 360;
 }
+function runwayLengthMeters(pts)
+{
+    if(pts.length < 2) return 0;
+
+    const a = pts[0];
+    const b = pts[pts.length - 1];
+
+    const lat1 = a[0] * Math.PI / 180;
+    const lat2 = b[0] * Math.PI / 180;
+
+    const dLat = b[0] - a[0];
+    const dLon = b[1] - a[1];
+
+    const x = dLon * Math.cos((lat1 + lat2) * 0.5);
+    const y = dLat;
+
+    const distDeg = Math.sqrt(x*x + y*y);
+
+    return distDeg * 111320;
+}
   
 function parseOSM(data,lat,lng){
   // Build node index
@@ -314,6 +334,7 @@ for(const apt of VMAP.airports)
 {
     let bestDist = 1e9;
     let bestHdg = 0;
+    let bestLong = 0;
 
     for(const rw of VMAP.roads)
     {
@@ -329,12 +350,16 @@ for(const apt of VMAP.airports)
         {
             bestDist = d;
             bestHdg = runwayHeading(rw.pts);
+          bestLong = runwayLengthMeters(rw.pts)
         }
     }
 
     // napr. len ak je runway do ~2 km
     if(bestDist < 0.0004)
+    {
         apt.rwy = bestHdg;
+      apt.elev = bestLong; //runway length instead elev
+    }
  } 
 }
 
