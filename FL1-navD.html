@@ -243,25 +243,26 @@ function runwayHeading(pts)
 }
 function runwayLengthMeters(pts)
 {
-    if(pts.length < 2) return 0;
+    if(!pts || pts.length < 2) return 0;
 
     const a = pts[0];
     const b = pts[pts.length - 1];
 
+    const R = 6371000;
+
     const lat1 = a[0] * Math.PI / 180;
     const lat2 = b[0] * Math.PI / 180;
 
-    const dLat = b[0] - a[0];
-    const dLon = b[1] - a[1];
+    const dLat = (b[0] - a[0]) * Math.PI / 180;
+    const dLon = (b[1] - a[1]) * Math.PI / 180;
 
-    const x = dLon * Math.cos((lat1 + lat2) * 0.5);
+    const x = dLon * Math.cos((lat1 + lat2) / 2);
     const y = dLat;
 
-    const distDeg = Math.sqrt(x*x + y*y);
+    const c = Math.sqrt(x*x + y*y);
 
-    return distDeg * 111320;
-}
-  
+    return R * c;
+}  
 function parseOSM(data,lat,lng){
   // Build node index
   const nodes={};
