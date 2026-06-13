@@ -180,7 +180,7 @@ async function fetchMapData(lat,lng){
     way["highway"~"motorway|trunk|primary"](${bbox});
     way["waterway"="river"](${bbox});
     way["aeroway"="runway"](${bbox});
-    node["natural"="peak"]["ele"](if:number(t["ele"]) > 450)(${bbox});
+    node["natural"="peak"]["ele"](if:number(t["ele"]) > 750)(${bbox});
   );out body;>;out skel qt;`;
   
 try{
