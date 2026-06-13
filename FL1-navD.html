@@ -144,7 +144,7 @@ let route=DEMO.map(p=>({...p}));
 
 // ═══ DYNAMIC VFR MAP ═══
 // Fetches OSM data via Overpass API, refreshes every 7.5km
-const VMAP={contours:[],airports:[],rivers:[],roads:[],towns:[],atz:[]};
+const VMAP={contours:[],peaks:[],airports:[],rivers:[],roads:[],towns:[],atz:[]};
 let mapFetchCenter=null; // {lat,lng} of last fetch
 let mapLoading=false;
 let mapStatus='';
@@ -180,6 +180,7 @@ async function fetchMapData(lat,lng){
     way["highway"~"motorway|trunk|primary"](${bbox});
     way["waterway"="river"](${bbox});
     way["aeroway"="runway"](${bbox});
+    node["natural"="peak"]["ele"](if:number(t["ele"]) > 450)(${bbox});
   );out body;>;out skel qt;`;
   
 try{
@@ -246,6 +247,7 @@ function parseOSM(data,lat,lng){
   const nodes={};
   for(const el of data.elements) if(el.type==='node') nodes[el.id]=el;
   
+  VMAP.peaks.length=0;
   VMAP.airports.length=0;
   VMAP.rivers.length=0;
   VMAP.roads.length=0;
@@ -254,6 +256,17 @@ function parseOSM(data,lat,lng){
 
   for(const el of data.elements){
     if(el.type==='node'||el.type==='way'){
+if(el.tags?.natural === 'peak')
+{
+    const ele = parseFloat(el.tags?.ele || 0);
+
+    VMAP.peaks.push({
+        lat: el.lat,
+        lng: el.lon,
+        ele,
+        name: el.tags?.name || ''
+    });
+}      
       // Airports/heliports
       if(el.tags?.aeroway==='aerodrome'||el.tags?.aeroway==='helipad'){
         const icao=el.tags?.icao||el.tags?.ref||el.tags?.name||'?';
@@ -690,6 +703,30 @@ function drawMap2D(pos,hdg){
     mctx.strokeStyle=rd.c;mctx.lineWidth=rd.w*3;mctx.stroke();
   }
 
+  // Peaks
+  for(const p of VMAP.peaks)
+  {
+    const xy = toXY(p.lat, p.lng);
+
+    mctx.save();
+
+    mctx.fillStyle = "rgba(255,220,80,0.9)";
+    mctx.shadowColor = "rgba(255,220,80,0.6)";
+    mctx.shadowBlur = 6;
+
+    mctx.beginPath();
+    mctx.arc(xy.x, xy.y, 3, 0, Math.PI * 2);
+    mctx.fill();
+
+    mctx.restore();
+
+    // text výšky (ft)
+    const ft = Math.round(p.ele * 3.28084);
+
+    mctx.fillStyle = "white";
+    mctx.font = "10px Arial";
+    mctx.fillText(ft + " ft", xy.x + 6, xy.y);
+  }
   // Planned route
   const{s,tot}=routeSegs(route);
   mctx.beginPath();
