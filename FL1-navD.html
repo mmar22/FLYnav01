@@ -805,7 +805,7 @@ function drawMap2D(pos,hdg){
     mctx.font=`bold ${Math.round(14*fontScale)}px Courier New`;mctx.fillStyle='rgba(0,255,136,1)';
     mctx.fillText(ap.name,p.x+sz+6,p.y-3);
     mctx.font=`${Math.round(12*fontScale)}px Courier New`;mctx.fillStyle='rgba(255,183,0,0.95)';
-    mctx.fillText(Math.round(ap.elev*3.28084)+"'",p.x+sz+6,p.y+14);
+    mctx.fillText(Math.round(ap.elev)+"m",p.x+sz+6,p.y+14);
   }
 
   // Aircraft symbol (centre)
