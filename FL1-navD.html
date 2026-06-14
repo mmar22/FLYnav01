@@ -750,7 +750,7 @@ function drawMap2D(pos,hdg){
     const ft = Math.round(p.ele * 3.28084);
 
     mctx.fillStyle = "white";
-    mctx.font = "10px Arial";
+    mctx.font = (13 * fontScale) + 'px Arial';
     mctx.fillText(ft + " ft", xy.x + 6, xy.y);
   }
   // Planned route
