@@ -276,7 +276,7 @@ function parseOSM(data,lat,lng){
   VMAP.atz.length=0;
 
   for(const el of data.elements){
-    if(el.type==='node'||el.type==='way'){
+    if(el.type==='node'||el.type==='way'||el.tags?.aeroway==='aerodrome'){
 if(el.tags?.natural === 'peak')
 {
     const ele = parseFloat(el.tags?.ele || 0);
